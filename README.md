@@ -12,12 +12,24 @@ To deepen my understanding of Kalman Filter
 
 ###### Adaptive Kalman Filter
 
-cd LinearKalmanFilter/sample/
-./ConstantVelocity_AKF.py
+```bash
+./LinearKalmanFilter/ConstantVelocity_AKF.py
+```
+
+- Adaptive R version
 
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_AKF.png)
 
+- R is constant
+
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_LKF.png)
+
+```bash
+./LinearKalmanFilter/all-1.py
+```
+
+![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/all-1.png)
+
 
 ## reference
 
