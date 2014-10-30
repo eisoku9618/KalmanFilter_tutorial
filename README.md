@@ -6,31 +6,88 @@ To deepen my understanding of Kalman Filter
 - Linear Kalman Filter
 - Adaptive Kalman Filter
 
-## How to use
+## 使い方と結果
 
 #### Linear Kalman Filter
 
 ###### Adaptive Kalman Filter
 
+- トンネルを通過する車を想定
+- 速度一定という条件
+   - 入力は加速度だが，今回は加速度が0なので無視できる
+- 状態量は位置と速度
+- 観測できるのは位置と速度
+- ただし突然速度の観測器にトラブルが発生してノイジーになったり，トンネルに入ってなぜかxの位置がノイジーになったりする
+   - 本当はトンネルに入ったらGPSをOFFにすべきだが，めんどくさいので未実装
+   - 具体的にはzが4次元から2次元，Hが4x4から2x4，Rが4x4から2x2に変わるような実装にする必要あり
+
 ```bash
-./LinearKalmanFilter/ConstantVelocity_AKF.py
+./LinearKalmanFilter/ConstantVelocity_AKF_with_GPS.py -h
 ```
 
-- Adaptive R version
+- Rを可変にした場合（速度一定という知識とその速度が既知という知識を使ってリアルタイムにGPSのRとスピードメータのRを更新している）
+   - これがいわゆるAKFらしい
 
 ```bash
-./ConstantVelocity_AKF.py -t 0.5 -r 1.0 -N 200 --vx 20 --vy 40 --noise 50
+./LinearKalmanFilter/ConstantVelocity_AKF_with_GPS.py
+```
+
+![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_AKF_with_GPS.png)
+
+- Rを固定した場合
+   - これは普通のLKF
+
+```bash
+./LinearKalmanFilter/ConstantVelocity_AKF_with_GPS.py --non-adaptive
+```
+
+![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_LKF_with_GPS.png)
+
+- LKFの方がAKFより推定値の分散低い？
+   - 「これは観測器がノイジーになった」という部分の実装を標準誤差を増やす，という実装にしており，平均値は正確な値が出ているから？
+      - 平均値もずらさないといけない？
+   - LKFの方はノイジーになった近辺で誤差が大きくなっている気もする？
+
+
+---
+
+- トンネルに入った車を想定
+- 速度一定という条件
+   - 入力は加速度だが，今回は加速度が0なので無視できる
+- 状態量は位置と速度
+- 観測できるのは速度
+- ただし突然観測器にトラブルが発生してノイジーになった
+
+```bash
+./LinearKalmanFilter/ConstantVelocity_AKF.py -h
+```
+
+- Rを可変にした場合（速度一定という知識を使ってリアルタイムにRを更新している）
+   - これが，いわゆるAKFらしい
+
+```bash
+./LinearKalmanFilter/ConstantVelocity_AKF.py -t 0.5 -r 1.0 -N 200 --vx 20 --vy 40 --noise 50
 ```
 
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_AKF.png)
 
-- R is constant
+- Rが変わらない場合
+   - これは普通のカルマンフィルタ（LKF）
 
 ```bash
-./ConstantVelocity_AKF.py -t 0.5 -r 1.0 -N 200 --vx 20 --vy 40 --noise 50 --non-adaptive
+./LinearKalmanFilter/ConstantVelocity_AKF.py -t 0.5 -r 1.0 -N 200 --vx 20 --vy 40 --noise 50 --non-adaptive
 ```
 
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_LKF.png)
+
+---
+
+- GPSを搭載した台車ロボットを想定
+- 速度一定という条件
+   - 入力は速度
+- 状態量は位置
+- 観測できるのも位置
+- 緑枠は分散
 
 ```bash
 ./LinearKalmanFilter/all-1.py
