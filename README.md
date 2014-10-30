@@ -18,9 +18,17 @@ To deepen my understanding of Kalman Filter
 
 - Adaptive R version
 
+```bash
+./ConstantVelocity_AKF.py -t 0.5 -r 1.0 -N 200 --vx 20 --vy 40 --noise 50
+```
+
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_AKF.png)
 
 - R is constant
+
+```bash
+./ConstantVelocity_AKF.py -t 0.5 -r 1.0 -N 200 --vx 20 --vy 40 --noise 50 --non-adaptive
+```
 
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/LKF/ConstantVelocity_LKF.png)
 

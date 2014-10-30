@@ -8,6 +8,7 @@
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 # print sys.path
 
+import argparse
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from LinearKalmanFilter import *
@@ -81,13 +82,25 @@ def plotData(data_dict, vx, vy):
     plt.show()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Adaptive Kalman Filter sample')
+    parser.add_argument('-t', type=float, default=0.5, help='time step')
+    parser.add_argument('-r', type=float, default=1.0, help='standard deviation of R')
+    parser.add_argument('-N', type=int, default=200, help='number of trials')
+    parser.add_argument('--vx', type=float, default=20, help='ground truth of velocity x')
+    parser.add_argument('--vy', type=float, default=40, help='ground truth of velocity y')
+    parser.add_argument('--noise', type=float, default=50, help='unexpected observation noise of velocity y')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--adaptive', dest='akf', action='store_true', help='use adaptive kalman filter')
+    group.add_argument('--non-adaptive', dest='akf', action='store_false', help='do not use adaptive kalman filter')
+    parser.set_defaults(akf=True)
+
     # parameter
-    dt = 0.5
-    ra = 1.0**2
+    dt = parser.parse_args().t
+    ra = parser.parse_args().r**2
     sv = 1.0
-    num = 200
-    vx = 20 # in X
-    vy = 40 # in Y
+    num = parser.parse_args().N
+    vx = parser.parse_args().vx # in X
+    vy = parser.parse_args().vy # in Y
 
     # initialize
     x0 = np.matrix([[0.0, 0.0, 0, 0]]).T
@@ -105,19 +118,20 @@ if __name__ == '__main__':
                    [0.0, 0.0, 0.0, 1.0]])
     H = np.matrix([[0.0, 0.0, 1.0, 0.0],
                    [0.0, 0.0, 0.0, 1.0]])
-    AKF = AdaptiveKalmanFilter(x0, P0, Q, R, F, H)
+    AKF = LinearKalmanFilter(x0, P0, Q, R, F, H)
 
     # input measurement
     mx = np.array(vx + np.random.randn(num))
     my = np.array(vy + np.random.randn(num))
     # some different error somewhere in the measurements
-    my[(2* num/4):(3 * num/4)] = np.array(vy + 50.0 * np.random.randn(num/4))
+    my[(2* num/4):(3 * num/4)] = np.array(vy + parser.parse_args().noise * np.random.randn(num/4))
     measurements = np.vstack((mx, my))
     for i in range(len(measurements[0])):
-        n = 10
-        if i > n:
-            R = np.matrix([[np.std(measurements[0, (i-n):i])**2, 0.0],
-                           [0.0, np.std(measurements[1, (i-n):i])**2]])
+        if parser.parse_args().akf:
+            n = 10
+            if i > n:
+                R = np.matrix([[np.std(measurements[0, (i-n):i])**2, 0.0],
+                               [0.0, np.std(measurements[1, (i-n):i])**2]])
         AKF.proc(Q, measurements[:, i].reshape(2, 1), R)
     plotData(AKF.getData(), vx, vy)
     # print AKF.getData()["x"][0]

@@ -3,7 +3,7 @@
 
 import numpy as np
 
-class AdaptiveKalmanFilter(object):
+class LinearKalmanFilter(object):
     def __init__(self, x0, P0, Q0, R0, F, H, B=None):
         self.x = x0
         self.P = P0
