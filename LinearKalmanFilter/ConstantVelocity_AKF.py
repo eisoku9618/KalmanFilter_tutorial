@@ -4,10 +4,6 @@
 # http://nbviewer.ipython.org/github/balzer82/Kalman/blob/master/Adaptive-Kalman-Filter-CV.ipynb
 # https://github.com/joferkington/oost_paper_code/blob/master/error_ellipse.py
 
-# import sys,os
-# sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
-# print sys.path
-
 import argparse
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
@@ -25,11 +21,8 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     vals, vecs = eigsorted(cov)
     theta = np.degrees(np.arctan2(*vecs[:,0][::-1]))
 
-    # Width and height are "full" widths, not radius
-    print vals, theta
-    # width, height = 2 * nstd * np.sqrt(vals)
-    width, height = 2 * nstd * vals
-    ellip = Ellipse(xy=pos, width=width, height=height, angle=theta, **kwargs)
+    width, height = 2 * nstd * np.sqrt(vals)
+    ellip = Ellipse(xy=pos, width=width, height=height, angle=90, **kwargs)
 
     ax.add_artist(ellip)
     return ellip
@@ -67,17 +60,18 @@ def plotData(data_dict, vx, vy):
 
     l = len(data_dict["x"])
     axarr[1, 1].scatter([x[0, 0] for x in data_dict["x"]], [x[1, 0] for x in data_dict["x"]], s=20, label='State', c='k')
-    axarr[1, 1].scatter(data_dict["x"][0][0, 0], data_dict["x"][0][1, 0], s=20, label='State', c='k')
-    axarr[1, 1].scatter(data_dict["x"][-1][0, 0], data_dict["x"][-1][1, 0], s=20, label='Goal', c='r')
+    axarr[1, 1].scatter(data_dict["x"][0][0, 0], data_dict["x"][0][1, 0], s=30, label='Start', c='b')
+    axarr[1, 1].scatter(data_dict["x"][-1][0, 0], data_dict["x"][-1][1, 0], s=30, label='Goal', c='r')
     axarr[1, 1].set_xlabel('X')
     axarr[1, 1].set_ylabel('Y')
     axarr[1, 1].set_title('Position')
     axarr[1, 1].legend(loc='best')
+    axarr[1, 1].set_aspect('equal')
 
     for i in range(l):
         if i % 10 == 0:
             plot_cov_ellipse(data_dict["P"][i][0:2, 0:2], np.array([data_dict["x"][i][0, 0], data_dict["x"][i][1, 0]]), ax=axarr[1, 1],
-                             nstd=3, alpha=0.5, color='green')
+                             nstd=30, alpha=0.5, color='green')
 
     plt.show()
 
