@@ -22,7 +22,7 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     theta = np.degrees(np.arctan2(*vecs[:,0][::-1]))
 
     width, height = 2 * nstd * np.sqrt(vals)
-    ellip = Ellipse(xy=pos, width=width, height=height, angle=90, **kwargs)
+    ellip = Ellipse(xy=pos, width=width, height=height, angle=theta, **kwargs)
 
     ax.add_artist(ellip)
     return ellip
