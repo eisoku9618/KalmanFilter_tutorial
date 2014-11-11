@@ -29,7 +29,7 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
 
 def main():
     # 初期化
-    T = 500 # 観測数
+    T = 300 # 観測数
     p0 = (-100,-100); p1 = (100,0); p2 = (0,100) # 観測値の座標
     x = np.mat([[0],[0]]) # 初期位置
     X = [np.mat([[0],[0]])] # 状態
@@ -68,7 +68,7 @@ def main():
     for i in range(T):
         x = A * x + B * u + np.random.multivariate_normal([0,0],Q,1).T
         X.append(x)
-        if i > T / 8 * 5 and i < T / 8 * 6:
+        if i > T / 8 * 3 and i < T / 8 * 6:
             y = h(x) + np.random.multivariate_normal([0,0,0],R_bad,1).T
         else:
             y = h(x) + np.random.multivariate_normal([0,0,0],R,1).T
@@ -95,18 +95,30 @@ def main():
         SM.append(Sigma)
 
     # 描画
-    a,b = np.array(np.concatenate(X,axis=1))
-    plt.plot(a,b,'rs-', label='Ground Trueth')
-    a,b = np.array(np.concatenate(M,axis=1))
-    plt.plot(a,b,'bo-', label='Estimated')
-    plt.axis('equal')
-    for i in range(len(a)):
+    f, axarr = plt.subplots(2, 2)
+
+    l = len(SM)
+    axarr[0, 0].semilogy(range(l), [p[0, 0] for p in SM], label='$P[0][0]$')
+    axarr[0, 0].semilogy(range(l), [p[1, 1] for p in SM], label='$P[1][1]$')
+    axarr[0, 0].semilogy(range(l), [p[0, 1] for p in SM], label='$P[0][1]$')
+    axarr[0, 0].semilogy(range(l), [p[1, 0] for p in SM], label='$P[1][0]$')
+    axarr[0, 0].set_xlabel('Filter Step')
+    axarr[0, 0].set_title('Uncertainty (Elements from Matrix $P$)')
+    axarr[0, 0].legend(loc='best')
+
+    l = len(M)
+    axarr[0, 1].scatter([x[0, 0] for x in M], [x[1, 0] for x in M], s=10, label='Estimated', c='b')
+    axarr[0, 1].scatter([x[0, 0] for x in X], [x[1, 0] for x in X], s=10, label='GroundTruth', c='r')
+    axarr[0, 1].set_xlabel('X')
+    axarr[0, 1].set_ylabel('Y')
+    axarr[0, 1].set_title('Position')
+    axarr[0, 1].legend(loc='lower right')
+    axarr[0, 1].set_aspect('equal')
+
+    for i in range(l):
         if i % 10 == 0:
-            plot_cov_ellipse(SM[i], np.array([a[i], b[i]]), nstd=10, alpha=0.5, color='green')
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Position')
-    plt.legend(loc='best')
+            plot_cov_ellipse(SM[i], np.array([M[i][0, 0], M[i][1, 0]]), nstd=10, alpha=0.5, color='green', ax=axarr[0, 1])
+
     plt.show()
 
 if __name__ == '__main__':
