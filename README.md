@@ -16,6 +16,16 @@ python ExtendedKalmanFilter/ekf.py
 
 ![Alt Text](https://github.com/eisoku9618/KalmanFilter_tutorial/raw/master/image/EKF/ekf.png)
 
+- 三点測量の観測地点で覆われる三角形の外に出るとCorrectionが弱くなって収束しない，ということに気づいた
+
+![Alt Text](https://github.com/eisoku9618/KalmanFilter*tutorial/raw/master/image/EKF/ekf_not-good.png)
+
+- 三点測量の地点を外側にしたらしっかりと収束した．この例では観測の方のヤコビアンの値が大事だった．
+
+![Alt Text](https://github.com/eisoku9618/KalmanFilter*tutorial/raw/master/image/EKF/ekf_good.png)
+
+
+
 
 #### Linear Kalman Filter
 
